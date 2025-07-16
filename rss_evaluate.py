@@ -149,8 +149,8 @@ def collect(feeds="feeds.json"):
             published_raw = e.get("published", "") or e.get("updated", "") or e.get("created", "")
             pub_time = parse_datetime_safe(published_raw)
             text = f"{title} {summary}"
-            if whitelist and not any(uni.lower() in text.lower() for uni in whitelist):
-                continue
+            #if whitelist and not any(uni.lower() in text.lower() for uni in whitelist):
+                #continue
             if now - pub_time > timedelta(hours=HOURS_WINDOW):
                 continue
             items.append({
