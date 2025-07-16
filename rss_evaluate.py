@@ -3,7 +3,7 @@ import json, os, re, time, requests, feedparser, difflib, csv
 from datetime import datetime, timedelta
 from dateutil import parser as date_parser
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_API_BASE = "https://api.groq.com/openai/v1"
 GROQ_MODEL = "llama3-8b-8192"
 HEADERS = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
