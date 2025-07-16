@@ -151,8 +151,8 @@ def collect(feeds="feeds.json"):
             text = f"{title} {summary}"
             #if whitelist and not any(uni.lower() in text.lower() for uni in whitelist):
                 #continue
-            if now - pub_time > timedelta(hours=HOURS_WINDOW):
-                continue
+            #if now - pub_time > timedelta(hours=HOURS_WINDOW):
+             #   continue
             items.append({
                 "university": f.get("university", "Unknown"),
                 "title": title,
