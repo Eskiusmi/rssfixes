@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<title>教育新闻排序展示</title>
+<style>
+body { font-family: system-ui, sans-serif; background: #0f1117; color: #f1f1f1; margin: 0; }
+header { background: #1c1f26; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a2d36; }
+#controls { padding: 1rem 2rem; background: #181b22; display: flex; align-items: center; gap: 1rem; }
+select { background: #2a2d36; color: #fff; border: none; padding: 0.4rem 0.6rem; border-radius: 5px; }
+#news { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; padding: 2rem; }
+.news-item { background: #1c1f26; border-radius: 10px; padding: 1rem; box-shadow: 0 0 5px rgba(255,255,255,0.03); transition: transform 0.2s; }
+.news-item:hover { transform: translateY(-4px); }
+.news-item h3 { color: #69b1ff; font-size: 1rem; margin: 0 0 .5rem; }
+.meta { font-size: .8rem; color: #999; margin-bottom: .5rem; }
+.score { font-size: .9rem; color: #ff6363; margin-bottom: .5rem; }
+.summary { font-size: .95rem; color: #ddd; }
+button.toggle { background: none; border: none; color: #4ea3ff; cursor: pointer; margin-top: .4rem; }
+button.toggle:hover { text-decoration: underline; }
+.dim-block { margin-top: .6rem; padding: .5rem; background: #181b22; border-radius: 6px; }
+.dim-score { color: #ffd27f; margin-bottom: .3rem; }
+.dim-explain { font-size: 0.85rem; color: #bbb; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 教育新闻评估</h1>
+</header>
+
+<div id="controls">
+  <label>排序方式：</label>
+  <select id="sort">
+    <option value="time">按时间（最新优先）</option>
+    <option value="score">按评分（高分优先）</option>
+  </select>
+</div>
+
+<div id="news">
+{% for item in items %}
+  <div class="news-item" data-time="{{ item.published }}" data-score="{{ item.score }}">
+    <a href="{{ item.link }}" target="_blank"><h3>{{ item.title }}</h3></a>
+    <div class="meta">{{ item.university }} · {{ item.published }}</div>
+    <div class="score">综合评分：{{ item.score }}</div>
+    <div class="summary">摘要：{{ item.summary }}</div>
+    <button class="toggle" data-t="dim-{{ loop.index }}">展开维度解释 ⬇</button>
+    <div style="display:none" id="dim-{{ loop.index }}">
+      {% for dim, val in item.dimensions.items() %}
+        <div class="dim-block">
+          <div class="dim-score"><strong>{{ dim }}：</strong>{{ val["分数"] }}/10</div>
+          <div class="dim-explain">📌 {{ val["说明"] }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+<script>
+document.querySelectorAll("button.toggle").forEach(btn => {
+  btn.onclick = () => {
+    const target = document.getElementById(btn.dataset.t);
+    if (target.style.display === "none" || !target.style.display) {
+      target.style.display = "block";
+      btn.textContent = "收起维度解释 ⬆";
+    } else {
+      target.style.display = "none";
+      btn.textContent = "展开维度解释 ⬇";
+    }
+  };
+});
+
+document.getElementById("sort").onchange = () => {
+  const by = document.getElementById("sort").value;
+  const container = document.getElementById("news");
+  const cards = Array.from(container.children);
+  cards.sort((a, b) => {
+    if (by === "score") {
+      return parseFloat(b.dataset.score || 0) - parseFloat(a.dataset.score || 0);
+    } else {
+      return new Date(b.dataset.time) - new Date(a.dataset.time);
+    }
+  });
+  cards.forEach(c => container.appendChild(c));
+};
+
+document.getElementById("sort").onchange();
+</script>
+
+</body>
+</html>
